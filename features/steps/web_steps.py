@@ -104,7 +104,56 @@ def step_impl(context, element_name):
 # to get the element id of any button
 ##################################################################
 
-## UPDATE CODE HERE ##
+##################################################################
+# Pressing a Button
+##################################################################
+@when('I press the "{button}" button')
+def step_impl(context, button):
+    """Click a button by its label (e.g. 'Create', 'Retrieve', 'Search', etc.)."""
+    button_id = button.lower() + '-btn'
+    logging.info("Clicking on button with id '%s'", button_id)
+    WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.element_to_be_clickable((By.ID, button_id))
+    ).click()
+
+##################################################################
+# Seeing a Specific Message
+##################################################################
+@then('I should see the message "{message}"')
+def step_impl(context, message):
+    """Check that a flash/status message is displayed on the page."""
+    logging.info("Looking for message '%s' in element 'flash_message'", message)
+    found = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, 'flash_message'),
+            message
+        )
+    )
+    assert found, f"Expected message '{message}' not found in flash_message"
+
+##################################################################
+# Seeing / Not Seeing Text in Search Results
+##################################################################
+@then('I should see "{text}" in the results')
+def step_impl(context, text):
+    """Check that the search results contain the given text."""
+    logging.info("Checking if '%s' is in the search_results", text)
+    found = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, 'search_results'),
+            text
+        )
+    )
+    assert found, f"Expected '{text}' in search_results, but it was not found."
+
+@then('I should not see "{text}" in the results')
+def step_impl(context, text):
+    """Check that the search results do NOT contain the given text."""
+    logging.info("Checking if '%s' is not in the search_results", text)
+    results_element = WebDriverWait(context.driver, context.wait_seconds).until(
+        expected_conditions.presence_of_element_located((By.ID, 'search_results'))
+    )
+    assert text not in results_element.text, f"Did NOT expect '{text}' in search_results, but found it."
 
 ##################################################################
 # This code works because of the following naming convention:

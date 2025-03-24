@@ -27,8 +27,33 @@ class ProductFactory(factory.Factory):
 
     class Meta:
         """Maps factory to data model"""
-
         model = Product
 
     id = factory.Sequence(lambda n: n)
-   ## Add code to create Fake Products 
+
+    # Use FuzzyChoice to pick from a list of product names
+    name = FuzzyChoice(
+        choices=["Hat", "Pants", "Shirt", "Apple", "Banana",
+                 "Pots", "Towels", "Ford", "Chevy", "Hammer", "Wrench"]
+    )
+
+    # Generate random descriptive text
+    description = factory.Faker("text")
+
+    # Create a price between 0.5 and 2000.0, with up to 2 decimal places
+    price = FuzzyDecimal(0.5, 2000.0, 2)
+
+    # Randomly assign True or False
+    available = FuzzyChoice(choices=[True, False])
+
+    # Pick a random Category enum value
+    category = FuzzyChoice(
+        choices=[
+            Category.UNKNOWN,
+            Category.CLOTHS,
+            Category.FOOD,
+            Category.HOUSEWARES,
+            Category.AUTOMOTIVE,
+            Category.TOOLS
+        ]
+    )
